@@ -11,23 +11,39 @@ jobs:
       contents: write
 
     steps:
+      # Checkout repository
       - uses: actions/checkout@v3
 
+      # 1. Setup Node.js (NO cache yet)
       - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      # 2. Enable Corepack (ships with Node 22)
+      - name: Enable Corepack
+        run: corepack enable
+
+      # 3. Activate pnpm so it exists on PATH
+      - name: Activate pnpm
+        run: corepack prepare pnpm@latest --activate
+
+      # 4. Setup pnpm cache (pnpm now exists)
+      - name: Setup pnpm cache
         uses: actions/setup-node@v3
         with:
           node-version: "22"
           cache: "pnpm"
 
-      - name: Enable Corepack
-        run: corepack enable
-
+      # 5. Install dependencies
       - name: Install deps
         run: pnpm install
 
+      # 6. Build plugins
       - name: Build plugin(s)
         run: node ./build.mjs
 
+      # 7. Copy additional files
       - name: Copy additional files
         run: |
           cp README.md dist/README.md
@@ -35,6 +51,7 @@ jobs:
           printf -- "> **Note:** You accessed a link that returned a 404, probably by clicking one of the plugin links. You're supposed to copy the link address and add it into Vendetta.\n\n" >> dist/404.md
           cat README.md >> dist/404.md
 
+      # 8. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
