@@ -7,7 +7,7 @@
             "id": "1016016621397090384"
         }
     ],
-    "master": "src/index.ts",
+    "master": "plugins/MessageModifier/src/index.ts",
     "vendetta": {
         "icon": "ic_message_edit"
     }
